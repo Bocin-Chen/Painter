@@ -461,9 +461,9 @@ namespace Painter
                 StrokeThickness = strokeThickness,            
                 Points = new PointCollection()
                 {
-                    new Point(iniP.X, iniP.Y),
-                    new Point(iniP.X, iniP.Y),
-                    new Point(iniP.X, iniP.Y),
+                    new Point(iniP.X+25, iniP.Y),//x=p1+(p1x-p3x)/2
+                    new Point(iniP.X+50, iniP.Y+10),//x2=p3x,y2=p3y
+                    new Point(iniP.X, iniP.Y+10)//x=p1
                 }
 
             };
@@ -493,23 +493,36 @@ namespace Painter
 
         private void DrawTriangle(Point endP)
         {
-            
-            double smX = iniP.X < endP.X ? (double)iniP.X : (double)endP.X;
-            double bgX = iniP.X < endP.X ? (double)endP.X : (double)iniP.X;
-
-            double smY = iniP.Y < endP.Y ? (double)iniP.Y : (double)endP.Y;
-            double bgY = iniP.Y < endP.Y ? (double)endP.Y : (double)iniP.Y;
-
-            double width = Math.Max(0, bgX - smX);
-            double height = Math.Max(0, bgY - smY);
-
-            // Update the shape's size
             if (currentShape is Polygon triangle)
             {
-                triangle.RenderTransform = new TranslateTransform(iniP.X, iniP.Y);
-                triangle.Points = new PointCollection() { new Point(0, bgY-smY), new Point(bgX-smX, bgY-smY), new Point(0 +((bgX - smX) / 2), 0) };
-               
+                double stx = Math.Min(iniP.X, endP.X);
+                double sty = Math.Min(iniP.Y, endP.Y);
+                double endX = Math.Max(iniP.X, endP.X);
+                double endY = Math.Max(iniP.Y, endP.Y);
+
+                double ceterX = stx+ ((endX - stx) / 2);
+                Point p1 = new Point(ceterX, sty);
+                Point p2 = new Point(endX, endY);
+                Point p3 = new Point(stx, endY);
+                triangle.Points = new PointCollection() { p1, p2, p3 };
+
             }
+            //double smX = iniP.X < endP.X ? (double)iniP.X : (double)endP.X;
+            //double bgX = iniP.X < endP.X ? (double)endP.X : (double)iniP.X;
+
+            //double smY = iniP.Y < endP.Y ? (double)iniP.Y : (double)endP.Y;
+            //double bgY = iniP.Y < endP.Y ? (double)endP.Y : (double)iniP.Y;
+
+            //double width = Math.Max(0, bgX - smX);
+            //double height = Math.Max(0, bgY - smY);
+
+            //// Update the shape's size
+            //if (currentShape is Polygon triangle)
+            //{
+            //    triangle.RenderTransform = new TranslateTransform(iniP.X, iniP.Y);
+            //    triangle.Points = new PointCollection() { new Point(0, bgY-smY), new Point(bgX-smX, bgY-smY), new Point(0 +((bgX - smX) / 2), 0) };
+
+            //}
         }
 
         private void DrawRectangle(Point endP)

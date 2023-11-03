@@ -398,7 +398,6 @@ namespace Painter
         {
             isCreatingShape = false;
             currentShape = null;
-
         }
 
 
@@ -458,12 +457,12 @@ namespace Painter
             {
                 Fill = fillColor,
                 Stroke = strokeColor,
-                StrokeThickness = strokeThickness,            
-                Points = new PointCollection()
+                StrokeThickness = strokeThickness,
+                 Points = new PointCollection()
                 {
-                    new Point(iniP.X+25, iniP.Y),//x=p1+(p1x-p3x)/2
-                    new Point(iniP.X+50, iniP.Y+10),//x2=p3x,y2=p3y
-                    new Point(iniP.X, iniP.Y+10)//x=p1
+                    new Point(iniP.X, iniP.Y),
+                    new Point(iniP.X, iniP.Y),
+                    new Point(iniP.X, iniP.Y)
                 }
 
             };
@@ -495,17 +494,42 @@ namespace Painter
         {
             if (currentShape is Polygon triangle)
             {
-                double stx = Math.Min(iniP.X, endP.X);
-                double sty = Math.Min(iniP.Y, endP.Y);
-                double endX = Math.Max(iniP.X, endP.X);
-                double endY = Math.Max(iniP.Y, endP.Y);
+              
 
-                double ceterX = stx+ ((endX - stx) / 2);
+                double stx = Math.Min(iniP.X, endP.X)- iniP.X;
+                double sty = Math.Min(iniP.Y, endP.Y)- iniP.Y;
+                double endX = Math.Max(iniP.X, endP.X)- iniP.X;
+                double endY = Math.Max(iniP.Y, endP.Y)- iniP.Y;
+
+                double ceterX = stx + ((endX - stx) / 2);
                 Point p1 = new Point(ceterX, sty);
                 Point p2 = new Point(endX, endY);
                 Point p3 = new Point(stx, endY);
-                triangle.Points = new PointCollection() { p1, p2, p3 };
+                double width = endX;
+                double height = endY;
 
+                triangle.Points = new PointCollection() { p1, p2, p3 };
+                triangle.SetValue(InkCanvas.LeftProperty, iniP.X);
+                triangle.SetValue(InkCanvas.TopProperty, iniP.Y);
+
+                // triangle.RenderTransform = new TranslateTransform(iniP.X, iniP.Y);
+
+
+                //Console.WriteLine("start:" + iniP + ",End:" + endP);
+                //double stx = Math.Min(iniP.X, endP.X) - iniP.X;
+                //double sty = Math.Min(iniP.Y, endP.Y) - iniP.Y;
+                //double endX = Math.Max(iniP.X, endP.X) - iniP.X;
+                //double endY = Math.Max(iniP.Y, endP.Y)- iniP.Y;
+
+                //double ceterX = stx+ ((endX - stx) / 2);
+                //Point p1 = new Point(ceterX, sty);
+                //Point p2 = new Point(endX, endY);
+                //Point p3 = new Point(stx, endY);
+                //double width = endX;
+                //double height = endY;
+
+                //triangle.RenderTransform = new TranslateTransform(iniP.X, iniP.Y);
+                //triangle.Points = new PointCollection() { p1, p2, p3};
             }
             //double smX = iniP.X < endP.X ? (double)iniP.X : (double)endP.X;
             //double bgX = iniP.X < endP.X ? (double)endP.X : (double)iniP.X;
@@ -513,8 +537,7 @@ namespace Painter
             //double smY = iniP.Y < endP.Y ? (double)iniP.Y : (double)endP.Y;
             //double bgY = iniP.Y < endP.Y ? (double)endP.Y : (double)iniP.Y;
 
-            //double width = Math.Max(0, bgX - smX);
-            //double height = Math.Max(0, bgY - smY);
+
 
             //// Update the shape's size
             //if (currentShape is Polygon triangle)
@@ -544,7 +567,22 @@ namespace Painter
         {
             Console.WriteLine("Resize");
         }
-
+        private void inkc_SelectionResizing(object sender, InkCanvasSelectionEditingEventArgs e)
+        {
+            foreach(var shapeItem in inkc.GetSelectedElements())
+            {
+                if (shapeItem is Polygon triangle)
+                {
+                    iniP.X = e.NewRectangle.X;
+                    iniP.Y = e.NewRectangle.Y;
+                    double NendX = e.NewRectangle.X + e.NewRectangle.Width;
+                    double NendY = e.NewRectangle.Y + e.NewRectangle.Height;
+                    currentShape = shapeItem;
+                    DrawTriangle(new Point(NendX, NendY));
+                }
+            }
+        }
+        
         private void DrawWin_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
